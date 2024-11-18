@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Southwest Airlines Boarding Pass Generator</title>
+    <style>
+        /* CSS styles */
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e6e9f0 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Start Page Styles */
+        .start-page {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .start-page.hide {
+            opacity: 0;
+            display: none;
+        }
+
+        .start-page h1 {
+            color: #304CB2;
+            font-size: 2.5em;
+            margin-bottom: 1em;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .start-page h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: #F0AB00;
+            border-radius: 2px;
+        }
+
+        .southwest-logo {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .southwest-logo img {
+            width: 150px; /* Make the logo smaller */
+            height: auto;
+        }
+
+        .welcome-page .southwest-logo {
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            color: #304CB2;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e3e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #304CB2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(48, 76, 178, 0.1);
+        }
+
+        input[type="submit"] {
+            background-color: #304CB2;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: auto;
+            min-width: 200px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #F0AB00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 171, 0, 0.2);
+        }
+
+        .decoration-element {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: #F0AB00;
+            opacity: 0.1;
+            border-radius: 60px;
+            z-index: -1;
+        }
+
+        .decoration-1 {
+            top: -20px;
+            left: -40px;
+        }
+
+        .decoration-2 {
+            bottom: -40px;
+            right: -20px;
+            background: #304CB2;
+        }
+
+        /* Boarding Pass Styles */
+        .boarding-pass {
+            background: white;
+            width: 100%;
+            display: flex;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .main-section {
+            flex: 4;
+            padding: 20px;
+            border-right: 2px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stub {
+            flex: 1;
+            padding: 20px;
+            background-color: #304CB2;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .airline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #304CB2;
+            color: #304CB2;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .flight-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: nowrap;
+        }
+
+        .info-group {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .info-group:last-child {
+            margin-right: 0;
+        }
+
+        .label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #304CB2;
+        }
+
+        .passenger-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 -20px;
+            padding: 20px;
+            background-color: #F0AB00;
+        }
+
+        /* Route Section Styles */
+        .route {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            margin-right: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #304CB2;
+        }
+
+        .location {
+            flex: 1;
+            text-align: center;
+        }
+
+        .route-divider {
+            flex: 0;
+            margin: 0 15px;
+        }
+
+        .barcode-section {
+            margin-top: auto;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .barcode {
+            width: 90%;
+            height: 60px;
+            margin: 0 auto 10px;
+            background: repeating-linear-gradient(
+                to right,
+                #000,
+                #000 2px,
+                transparent 2px,
+                transparent 4px,
+                #000 4px,
+                #000 6px,
+                transparent 6px,
+                transparent 8px
+            );
+        }
+
+        .barcode-number {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .confirmation {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .stub .label {
+            color: #F0AB00;
+        }
+
+        .stub .value {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stub-header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #F0AB00;
+            color: #F0AB00;
+        }
+
+        .stub .barcode-section {
+            margin-top: auto;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .stub .barcode {
+            width: 90%;
+            height: 60px;
+            margin: 0 auto 10px;
+            background: repeating-linear-gradient(
+                to right,
+                #fff,
+                #fff 2px,
+                transparent 2px,
+                transparent 4px,
+                #fff 4px,
+                #fff 6px,
+                transparent 6px,
+                transparent 8px
+            );
+        }
+
+        .stub .barcode-number {
+            font-size: 12px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .boarding-group {
+            background-color: #F0AB00;
+            color: #304CB2;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 20px;
+            align-self: flex-end;
+            margin-top: -45px;
+        }
+
+        /* Add these new styles */
+        .boarding-pass-page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .boarding-pass-page.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Welcome Page Styles */
+        .welcome-page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcome-page.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .welcome-message {
+            font-size: 2.5em;
+            color: #304CB2;
+            animation: slideIn 1s ease-out;
+        }
+
+        .proceed-button {
+            background-color: #304CB2;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .proceed-button:hover {
+            background-color: #F0AB00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 171, 0, 0.2);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Page -->
+        <div class="start-page" id="start-page">
+            <div class="decoration-element decoration-1"></div>
+            <div class="decoration-element decoration-2"></div>
+            
+            <div class="southwest-logo">
+                <img src="./southwest.png" alt="Southwest Airlines Logo">
+            </div>
+            
+            <h1>Retrieve Your Boarding Pass</h1>
+            
+            <div class="form-container">
+                <form id="boarding-pass-form">
+                    <div class="form-group">
+                        <label for="passenger-name">Passenger Name</label>
+                        <input type="text" id="passenger-name" name="passengerName" placeholder="Enter your full name" required>
+                    </div>
+                    <input type="submit" value="Generate Boarding Pass">
+                </form>
+            </div>
+        </div>
+
+        <!-- Welcome Page -->
+        <div class="welcome-page" id="welcome-page">
+            <div class="southwest-logo">
+                <img src="./southwest.png" alt="Southwest Airlines Logo">
+            </div>
+            <div class="welcome-message">Welcome aboard,  <span id="welcome-name"></span>!</div>
+        </div>
+
+        <!-- Boarding Pass Page -->
+        <div class="boarding-pass-page" id="boarding-pass-page">
+            <div class="boarding-pass">
+                <div class="main-section">
+                    <div class="airline-header">
+                        <div class="logo">SOUTHWEST</div>
+                        <div>BOARDING PASS</div>
+                    </div>
+
+                    <div class="passenger-info">
+                        <div class="info-group">
+                            <div class="label">Passenger Name</div>
+                            <div class="value" id="display-passenger-name">JOHN DOE</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label">Rapid Rewards</div>
+                            <div class="value" id="display-rapid-rewards">#12345678</div>
+                        </div>
+                    </div>
+
+                    <div class="flight-info">
+                        <div class="info-group">
+                            <div class="label">Flight</div>
+                            <div class="value" id="display-flight-number">WN 1234</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label">Date</div>
+                            <div class="value" id="display-flight-date">NOV 17</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label">Gate</div>
+                            <div class="value" id="display-gate">B12</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label">Boarding</div>
+                            <div class="value" id="display-boarding-time">10:30</div>
+                        </div>
+                    </div>
+
+                    <div class="route">
+                        <div class="location" id="display-from">DAL</div>
+                        <div class="route-divider">→</div>
+                        <div class="location" id="display-to">HOU</div>
+                    </div>
+
+                    <div class="boarding-group" id="display-boarding-group">A16</div>
+
+                    <div class="barcode-section">
+                        <div class="barcode"></div>
+                        <div class="barcode-number" id="display-barcode-number">1234567890</div>
+                        <div class="confirmation" id="display-confirmation">CONFIRMATION: ABC123</div>
+                    </div>
+                </div>
+
+                <div class="stub">
+                    <div class="stub-header">BOARDING PASS</div>
+                    <div class="flight-date">
+                        <div class="info-group">
+                            <div class="label">Flight</div>
+                            <div class="value" id="display-stub-flight-number">WN 1234</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label">Group</div>
+                            <div class="value" id="display-stub-boarding-group">A16</div>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <div class="label">Passenger Name</div>
+                        <div class="value" id="display-stub-passenger-name">JOHN DOE</div>
+                    </div>
+                    <div class="route">
+                        <div class="info-group">
+                            <div class="label">From-To</div>
+                            <div class="value" id="display-stub-route">DAL-HOU</div>
+                        </div>
+                    </div>
+                    <div class="barcode-section">
+                        <div class="barcode"></div>
+                        <div class="barcode-number" id="display-stub-barcode-number">1234567890</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle form submission and display boarding pass -->
+    <script>
+        function showBoardingPass() {
+            const welcomePage = document.getElementById('welcome-page');
+            const boardingPassPage = document.getElementById('boarding-pass-page');
+            
+            welcomePage.style.opacity = '0';
+            setTimeout(() => {
+                welcomePage.style.display = 'none';
+                boardingPassPage.style.display = 'block';
+                setTimeout(() => {
+                    boardingPassPage.classList.add('show');
+                }, 50);
+            }, 500);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('boarding-pass-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const passengerName = document.getElementById('passenger-name').value.toUpperCase();
+                
+                // Generate random Rapid Rewards number
+                const rapidRewards = '#' + Math.floor(10000000 + Math.random() * 90000000);
+
+                // Generate random gate (e.g., A1 to C30)
+                const gates = [];
+                ['A', 'B', 'C'].forEach(letter => {
+                    for (let i = 1; i <= 30; i++) {
+                        gates.push(`${letter}${i}`);
+                    }
+                });
+                const gate = gates[Math.floor(Math.random() * gates.length)];
+
+                // Generate random boarding group (e.g., A1 to C60)
+                const groups = [];
+                ['A', 'B', 'C'].forEach(letter => {
+                    for (let i = 1; i <= 60; i++) {
+                        groups.push(`${letter}${i}`);
+                    }
+                });
+                const boardingGroup = groups[Math.floor(Math.random() * groups.length)];
+
+                // Generate random flight number
+                const flightNumber = 'MSLCE 460-0';
+
+                // Generate random flight date in November
+                const flightDate = 'NOV 21';
+
+                const boardingTime = '11:00';
+
+                // Randomly select from and to airports
+                const from = 'Organizational Processes ';
+                const to = ' Cutting Through the Storm';
+
+                // Generate random confirmation number
+                const confirmationNumber = generateConfirmationNumber();
+
+                // Generate random barcode number
+                const barcodeNumber = Math.floor(1000000000 + Math.random() * 9000000000);
+
+                // Update boarding pass with generated values
+                document.getElementById('display-passenger-name').textContent = passengerName;
+                document.getElementById('display-rapid-rewards').textContent = rapidRewards;
+                document.getElementById('display-flight-number').textContent = flightNumber;
+                document.getElementById('display-flight-date').textContent = flightDate;
+                document.getElementById('display-gate').textContent = gate;
+                document.getElementById('display-boarding-time').textContent = boardingTime;
+                document.getElementById('display-from').textContent = from;
+                document.getElementById('display-to').textContent = to;
+                document.getElementById('display-boarding-group').textContent = boardingGroup;
+                document.getElementById('display-confirmation').textContent = `CONFIRMATION: ${confirmationNumber}`;
+                document.getElementById('display-barcode-number').textContent = barcodeNumber;
+
+                // Update stub
+                document.getElementById('display-stub-flight-number').textContent = flightNumber;
+                document.getElementById('display-stub-boarding-group').textContent = boardingGroup;
+                document.getElementById('display-stub-passenger-name').textContent = passengerName;
+                document.getElementById('display-stub-route').textContent = `${from}-${to}`;
+                document.getElementById('display-stub-barcode-number').textContent = barcodeNumber;
+
+                // Update the show/hide logic
+                const startPage = document.getElementById('start-page');
+                const welcomePage = document.getElementById('welcome-page');
+                
+                // Set welcome names
+                document.getElementById('welcome-name').textContent = passengerName;
+                
+                startPage.classList.add('hide');
+                setTimeout(() => {
+                    startPage.style.display = 'none';
+                    welcomePage.style.display = 'block';
+                    setTimeout(() => {
+                        welcomePage.classList.add('show');
+                        // Automatically transition to the boarding pass page
+                        setTimeout(showBoardingPass, 2000);
+                    }, 50);
+                }, 500);
+            });
+        });
+
+        // Function to generate a random confirmation number (6 uppercase letters)
+        function generateConfirmationNumber() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < 6; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+    </script>
+</body>
+</html>
